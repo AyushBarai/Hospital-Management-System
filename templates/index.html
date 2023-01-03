@@ -1,0 +1,22 @@
+{% extends 'Base.html' %}
+
+{% block content %}
+{% if current_user.is_authenticated %}
+<li class="dropdown"><a href="#"><span>Welcome {{current_user.Name}} </span> <i class="bi bi-chevron-down"></i></a>
+    <ul>
+        <li><a class="text-success" href="/edit">Edit Appointment</a></li>
+        <li><a class="text-success" href="/logout">Logout</a></li>
+</li>
+{% else %}
+            <li class="nav-link scrollto"><a href="/login"><span>Log in</span> <i class="bi bi-chevron-down"></i></a>
+            </li>
+{% endif %} 
+
+{% endblock %}
+
+{% block doc %}
+    {% for doc in seldoc %}
+        <option value="Doctor 1">{{doc.Name}}</option>
+    {% endfor %}
+{% endblock %}            
+                  
