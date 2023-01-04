@@ -1,0 +1,79 @@
+{% extends 'docdetail.html' %}
+
+{% block detail %}
+    <!-- ======= Appointment Section ======= -->
+    <section id="appointment" class="appointment section-bg">
+        <div class="container" data-aos="fade-up" >
+  
+          <div class="section-title">
+            <h2>ADD MEDICINE</h2>
+          </div>
+          {% with messages=get_flashed_messages(with_categories=True )%}
+              {% if messages %}
+                  {% for category,message in messages%}
+                      <div class="alert alert-{{category}}" role="alert" align="center">
+                          <strong>{{message}}</strong>
+                          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close">
+                          </button>
+                      </div> 
+                  {% endfor %}
+              {% endif %}
+          {% endwith %}
+          <form action="/medicine/{{namee}}" method="POST" >
+            <div class="row-center" align="center">
+              <div class="col-md-4">
+                <input type="text" name="med" class="form-control" id="med" placeholder="Med" required>
+              </div>
+              <div class="col-md-4">
+                <input type="tel" class="form-control" name="quantity" id="quantity" placeholder="Quantity" required>
+              </div>
+            </div>  
+            <div class="text-center"><button class="appointment-btn scrollto" type="submit">Make an Appointment</button></div>
+          </form>
+        </div>
+    </section>
+       
+
+      {% if query != Null %}
+        <!-- Detail Section-->
+            <section id="table" style = "padding-left: 150px;" >
+                <div>
+                
+                    <div>
+                            <table class="table table-striped table-hover">
+                            <thead class="thead-light">
+                                <tr>
+                                <th scope="col">Name</th>    
+                                <th scope="col">Medicine</th>
+                                <th scope="col">Quantity</th>
+                                <th scope="col">Date</th>
+                                <th scope="col">Delete</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            {% for post in query %}
+                                <tr>
+                                <td>{{post.name}}</td>
+                                <td>{{post.Med}}</td>
+                                <td>{{post.quantity}}</td>
+                                <td>{{post.date}}</td>
+                                <td><a href="/dele/{{post.mid}}/name/{{post.name}}"><button onclick="return confirm('Are you sure to Delete data');" class="btn btn-success">Delete </button> </a> </td>
+                                </tr>
+                            {% endfor %}
+                            
+                            </tbody>
+                            </table>
+                        </div>
+                        
+                </div>
+                </section>
+    {% endif%}
+
+
+
+    
+      
+    <!-- End Appointment Section -->
+  
+
+{% endblock %}

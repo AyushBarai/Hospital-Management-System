@@ -1,3 +1,4 @@
+from datetime import datetime
 import pyrebase
 from flask import Flask,render_template,request,session,redirect,url_for,flash
 from flask_sqlalchemy import SQLAlchemy
@@ -43,13 +44,20 @@ class Test(db.Model):
     name=db.column(db.String(50))
 
 
+class modicine(db.Model, UserMixin):
+    mid=db.Column(db.Integer,primary_key=True)
+    name=db.Column(db.String(100))
+    med=db.Column(db.String(100))
+    quanity=db.Column(db.Integer)
+    date=db.Column(db.DateTime, nullable = False)
+
+
+
 class doctor(db.Model, UserMixin):
     did=db.Column(db.Integer,primary_key=True)
     Email=db.Column(db.String(50))
     Name=db.Column(db.String(50))
     dept=db.Column(db.String(50))
-
-
 
 
 class signin(db.Model, UserMixin):
@@ -128,6 +136,37 @@ def docedit():
     exist=current_user.dept
     query=db.engine.execute(f"SELECT * FROM `patients` WHERE dept='{exist}'")
     return render_template("docedit.html", query=query) 
+
+@app.route("/medicine/<string:name>", methods=['POST','GET'])
+@login_required
+def medicine(name):
+    if request.method=="POST":
+        med=request.form.get('med')
+        quantity=request.form.get('quantity')
+        date = datetime.now()
+        new_user=db.engine.execute(f"INSERT INTO `medicine`(`med`,`quantity`,`name`,`date`) VALUES('{med}','{quantity}','{name}','{date}')")
+
+    query=db.engine.execute(f"SELECT * FROM `medicine` WHERE name='{name}'")
+    print(name)
+    return render_template("medicine.html", namee=name, query=query)
+
+
+@app.route("/dele/<string:mid>/name/<string:name>",methods=['POST','GET'])
+@login_required
+def dele(mid,name):
+    print(mid,name)
+    db.engine.execute(f"DELETE FROM `medicine` WHERE `medicine`.`mid`={mid}")
+    print(name)
+    return redirect(url_for('medicine', name = name))
+#redirect('/medicine/`name`')
+
+
+@app.route("/med")
+def med():
+    name=current_user.Name
+    query=db.engine.execute(f"SELECT * FROM `medicine` WHERE name='{name}'")
+    return render_template("patmed.html", query=query)
+
  
 @app.route("/login", methods=['POST','GET'])
 def login():
@@ -137,8 +176,8 @@ def login():
         type=request.form.get('type')
         user=signin.query.filter_by(Email=Email).first()
         print(user)
-        if user.type=="doctor":
-            if user and check_password_hash(user.password,password):
+        if type=="doctor":
+            if user and check_password_hash(user.password,password) and user.type==type:
                 login_user(user)
                 exist=current_user.dept
                 query=db.engine.execute(f"SELECT * FROM `patients` WHERE dept='{exist}'")
@@ -147,9 +186,10 @@ def login():
                 flash('invalid credentials' , 'danger')
                 return render_template("login.html")
 
-        elif user.type=="patient":
-            if user and check_password_hash(user.password,password):
+        elif type=="patient":
+            if user and check_password_hash(user.password,password) and user.type==type:
                 login_user(user)
+                print("patient")
                 return render_template("index.html")
             else:
                 flash('invalid credentials' , 'danger')
@@ -159,6 +199,7 @@ def login():
             print(user,user.password,password)
             if user and check_password_hash(user.password,password):
                 login_user(user)
+                print("None")
                 return render_template("index.html")
             else:
                 flash('invalid credentials' , 'danger')
@@ -200,7 +241,6 @@ def signup():
 
     return render_template("signup.html")
 
-
 @app.route('/logout')
 @login_required
 def logout():
@@ -216,12 +256,13 @@ def patlogin():
 
 
 
+
 @app.route("/delete/<string:pid>",methods=['POST','GET'])
 @login_required
 def delete(pid):
     db.engine.execute(f"DELETE FROM `patients` WHERE `patients`.`pid`={pid}")
     flash("Slot Deleted Successful","danger")
-    return redirect('/edit')
+    return redirect('/docedit')
 
 @app.route("/check/<string:pid>",methods=['POST','GET'])
 @login_required

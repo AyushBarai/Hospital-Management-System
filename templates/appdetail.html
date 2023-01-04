@@ -1,5 +1,6 @@
 {% extends 'detail.html' %}
 
+
 {% block content %}
 {% if current_user.is_authenticated %}
 <li class="dropdown"><a href="#"><span>Welcome {{current_user.Name}} </span> <i class="bi bi-chevron-down"></i></a>
@@ -14,6 +15,7 @@
 {% endif %} 
 
 {% endblock %}
+
 
 {% block detail %}
 <div>
