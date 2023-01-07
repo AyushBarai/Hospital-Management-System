@@ -87,7 +87,9 @@ class patients(db.Model, UserMixin):
 def index():
     if current_user==True:
         if current_user.type == "doctor":
-            return render_template("docbase.html")
+            exist=current_user.dept
+            query=db.engine.execute(f"SELECT * FROM `patients` WHERE dept='{exist}'")
+            return render_template("docbase.html", query=query)
     return render_template("index.html")
 
 @app.route("/appointment", methods=['POST','GET'])
@@ -239,7 +241,7 @@ def signup():
         flash("SignUp Success Please Login", "Success")
         return render_template("login.html")
 
-    return render_template("signup.html")
+    return render_template("tempsignup.html")
 
 @app.route('/logout')
 @login_required

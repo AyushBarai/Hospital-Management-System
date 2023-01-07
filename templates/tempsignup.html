@@ -1,9 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-	<title>
-		login
-	</title>
+	<title>signup</title>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 <!--===============================================================================================-->	
@@ -30,30 +28,53 @@
 <!--===============================================================================================-->
 </head>
 <body>
-	
 	<div>
 		<div class="container-login100" style="background-image: url('../static/assets/img/slide/slide-2000.png');">
 			<div class="wrap-login100 p-l-55 p-r-55 p-t-65 p-b-54">
-				<span class="login100-form-title" > Login
-					<br>
-					<span> <a href="/">HOME</a> </span>
-				</span>{% include "message.html" %}
-				<form action="/login" class="login100-form validate-form" method="POST">
+                <span align="center"><a href="/">HOME</a> </span>
+
+				<span class="login100-form-title"> Signup!</span>
+                {% include "message.html" %}
+
+				<form action="/signup" class="login100-form validate-form" method="POST">
 					<div class="row">
 
 					<div>
 						<select name="type" id="type">
-							<option value="doctor">Doctor</option>
-							<option value="patient">Patient</option>
-							<option value="Admin">Admin</option>
+									<option value="">Account Type</option>
+									<option value="doctor">Doctor</option>
+									<option value="patient">Patient</option>
 						</select>
 					</div>
-					<div class="wrap-input100 validate-input m-b-23" data-validate = "Username is reauired" >
-						<span class="label-input100">Email</span>
-						<input class="input100" type="text" name="Email" placeholder="Type your username" required>
+                    <div>
+						<select name="type" id="type">
+                            <option value="">Select if Doctor</option>
+                            <option value="dept 1">Department 1</option>
+                            <option value="dept 2">Department 2</option>
+                            <option value="dept 3">Department 3</option>
+                            <option value="none">Not Applicable</option>
+                        </select>
+					</div>
+
+                    <div class="wrap-input100 validate-input m-b-23" data-validate = "Username is reauired" >
+						<span class="label-input100">Full Name</span>
+						<input class="input100" type="text" name="Name" placeholder="Type your Name" required>
 						<span class="focus-input100" data-symbol="&#xf206;"></span>
 					</div>
-					
+
+
+					<div class="wrap-input100 validate-input m-b-23" data-validate = "Username is reauired" >
+						<span class="label-input100">Email</span>
+						<input class="input100" type="text" name="Email" placeholder="John Doe" required>
+						<span class="focus-input100" data-symbol="&#xf206;"></span>
+					</div>
+
+                    <div class="wrap-input100 validate-input m-b-23" data-validate = "Username is reauired" >
+						<span class="label-input100">Contact Info</span>
+						<input class="input100" type="text" name="Contact" placeholder="99999 99999" required>
+						<span class="focus-input100" data-symbol="&#xf206;"></span>
+					</div>
+				
 
 					<div class="wrap-input100 validate-input" data-validate="Password is required">
 						<span class="label-input100">Password</span>
@@ -61,13 +82,11 @@
 						<span class="focus-input100" data-symbol="&#xf190;"></span>
 					</div>
 
-					
-					<div class="text-right p-t-8 p-b-31">
-						<a href="#">
-							Forgot password?
-						</a>
-					</div>
-					
+                    <div class="wrap-input100 validate-input" data-validate="Password is required">
+						<span class="label-input100">Password</span>
+						<input class="input100" type="password" name="confirm" placeholder="Confirm password" required>
+						<span class="focus-input100" data-symbol="&#xf190;"></span>
+					</div><br>					
 					<div class="container-login100-form-btn">
 						<div class="wrap-login100-form-btn">
 							<div class="login100-form-bgbtn"></div>
@@ -76,9 +95,8 @@
 					</div>
 				</div>
 				</form>
-
 					<div class="txt1 text-center p-t-54 p-b-20">
-						<p class="mt-4">Signup? <a href="/signup">Sign up</a></p>
+						<p class="mt-4">Signup? <a href="/login">Sign up</a></p>
 					</div>
 			</div>
 		</div>
