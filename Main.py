@@ -77,7 +77,7 @@ class patients(db.Model, UserMixin):
     Name=db.Column(db.String(30))
     Email=db.Column(db.String(50))
     gender=db.Column(db.String(50))
-    disease=db.Column(db.String(50))
+    disease=db.Column(db.String(5000))
     time=db.Column(db.String(50))
     dept=db.Column(db.String(50),nullable=False)
     phone=db.Column(db.String(12))
