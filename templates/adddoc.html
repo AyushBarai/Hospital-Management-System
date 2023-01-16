@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+
+  <title>SAS</title>
+  <meta content="" name="description">
+  <meta content="" name="keywords">
+
+  <!-- Favicons -->
+  <link href="../static/assets/img/favicon.png" rel="icon">
+  <link href="../static/assets/img/apple-touch-icon.png" rel="apple-touch-icon">
+
+  <!-- Google Fonts -->
+  <link
+    href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Roboto:300,300i,400,400i,500,500i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i"
+    rel="stylesheet">
+
+  <!-- Vendor CSS Files -->
+  <link href="../static/assets/vendor/fontawesome-free/css/all.min.css" rel="stylesheet">
+  <link href="../static/assets/vendor/animate.css/animate.min.css" rel="stylesheet">
+  <link href="../static/assets/vendor/aos/aos.css" rel="stylesheet">
+  <link href="../static/assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link href="../static/assets/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
+  <link href="../static/assets/vendor/boxicons/css/boxicons.min.css" rel="stylesheet">
+  <link href="../static/assets/vendor/glightbox/css/glightbox.min.css" rel="stylesheet">
+  <link href="../static/assets/vendor/swiper/swiper-bundle.min.css" rel="stylesheet">
+
+  <!-- Template Main CSS File -->
+  <link href="../static/assets/css/style.css" rel="stylesheet">
+
+  <!-- =======================================================
+  * Template Name: Medicio - v4.9.1
+  * Template URL: https://bootstrapmade.com/medicio-free-bootstrap-theme/
+  * Author: BootstrapMade.com
+  * License: https://bootstrapmade.com/license/
+  ======================================================== -->
+</head>
+
+<body>
+
+  <!-- ======= Top Bar ======= -->
+  <div id="topbar" class="d-flex align-items-center fixed-top">
+    <div class="container d-flex align-items-center justify-content-center justify-content-md-between">
+      <div class="align-items-center d-none d-md-flex">
+        <i class="fixed-top"></i> Smart Assist System
+      </div>
+    </div>
+  </div>
+
+  <!-- ======= Header ======= -->
+  <header id="header" class="fixed-top">
+    <div class="container d-flex align-items-center">
+
+      <a href="/" class="logo me-auto"><img src="../static/assets/img/SAS.png" alt="SAS"></a>
+      <!-- Uncomment below if you prefer to use an image logo -->
+      <!--<h1 class="logo me-auto"><a href="index.html">SAS</a></h1> -->
+
+      <nav id="navbar" class="navbar order-last order-lg-0">
+        <ul>
+          <li><a class="nav-link scrollto " href="admin">Home</a></li>
+          <li><a class="nav-link scrollto" href={% if current_user.is_authenticated%}
+                                                    "/adminapp" 
+                                                  {% else %}
+                                                    "/login"  
+                                                  {% endif %}>Appointment Details</a></li>
+          <li><a class="nav-link scrollto" href={% if current_user.is_authenticated%}
+                                                    "/adddoc" 
+                                                  {% else %}
+                                                    "/login"  
+                                                  {% endif %}>Add Doctor</a></li>
+          <li><a class="nav-link scrollto" href="#departments">Departments</a></li>
+          <li><a class="nav-link scrollto" href="#contact">Contact</a></li>
+          {% if current_user.is_authenticated %}
+                <li class="dropdown"><a href="#"><span>Welcome {{current_user.Name}} </span> <i class="bi bi-chevron-down"></i></a>
+                    <ul>
+                        <li><a class="text-success" href="/edit">Edit Appointment</a></li>
+                        <li><a class="text-success" href="/logout">Logout</a></li>
+                </li>
+                {% else %}
+                            <li class="nav-link scrollto"><a href="/login"><span>Log in</span> <i class="bi bi-chevron-down"></i></a>
+                            </li>
+                {% endif %} 
+        </ul>
+        <i class="bi bi-list mobile-nav-toggle"></i>
+      </nav><!-- .navbar -->
+    </div>
+  </header><!-- End Header -->
+
+  <!-- Detail Section-->
+  <section id="table" style = "padding-left: 150px; padding-right: 150px;">
+    <section id="appointment" class="appointment section-bg">
+        <div class="container" data-aos="fade-up">
+  
+          <div class="section-title">
+            <h2>Add Doctor</h2>
+          </div>
+          {% with messages=get_flashed_messages(with_categories=True )%}
+              {% if messages %}
+                  {% for category,message in messages%}
+                      <div class="alert alert-{{category}}" role="alert" align="center">
+                          <strong>{{message}}</strong>
+                          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close">
+                          </button>
+                      </div> 
+                  {% endfor %}
+              {% endif %}
+          {% endwith %}
+          <form action={% if current_user.is_authenticated %}
+                          "/adddoc" 
+                        {% else %}
+                          "/login"  
+                        {% endif %} method="POST">
+            <div class="row">
+              <div class="col-md-4 form-group">
+                <input type="text" name="name" class="form-control" id="name" placeholder="Doctor Name" required>
+              </div>
+              <div class="col-md-4 form-group">
+                <input type="text" name="email" class="form-control" id="email" placeholder="Doctor Email" required>
+              </div>
+              <div class="col-md-4 form-group">
+                <input type="text" name="phone" class="form-control" id="phone" placeholder="Doctor Contact" required>
+              </div>
+              <div class="col-md-4 form-group mt-3">
+                <input type="text" name="password" class="form-control" id="password" placeholder="Doctor password" required>
+              </div>
+              
+              <div class="col-md-4 form-group mt-3">
+                <select name="dept" id="dept" class="form-select">
+                  <option value="">Select Department</option>
+                  <option value="OPD">OPD</option>
+                  <option value="IPD">IPD</option>
+                  <option value="Oncology">Oncology</option>
+                  <option value="Pediatrics">Pediatrics</option>
+                  <option value="Neurology">Neurology</option>
+                  <option value="Orthopaedic">Orthopaedic</option>
+                </select>
+              </div>
+            </div>
+            <div class="text-center"><button class="appointment-btn scrollto" type="submit">Add Doctor</button></div>
+          </form>
+        </div>
+      </section><!-- End Appointment Section -->
+  {% if query != Null %}
+        <!-- Detail Section-->
+            <section id="table" style = "padding-left: 150px;" >
+                <div>
+                    <div>
+                            <table class="table table-striped table-hover">
+                            <thead class="thead-light">
+                                <tr>
+                                <th scope="col">Name</th>    
+                                <th scope="col">Email</th>
+                                <th scope="col">Contact</th>
+                                <th scope="col">Delete</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            {% for post in query %}
+                                <tr>
+                                <td>{{post.Name}}</td>
+                                <td>{{post.Email}}</td>
+                                <td>{{post.phone}}</td>
+                                <td><a href="/dele/{{post.mid}}/name/{{post.name}}"><button onclick="return confirm('Are you sure to Delete data');" class="btn btn-success">Delete </button> </a> </td>
+                                </tr>
+                            {% endfor %}
+                            
+                            </tbody>
+                            </table>
+                        </div>
+                        
+                </div>
+                </section>
+    {% endif%}
+</section>
+
+
+
+    <!-- ======= Contact Section ======= -->
+    <section id="contact" class="contact">
+      <div class="container">
+
+        <div class="section-title">
+          <h2>Name AND USN</h2>
+        </div>
+
+      </div>
+
+      <div class="container">
+
+        <div class="row mt-5">
+
+          <div class="col-lg-4">
+            <div class="col-md-12">
+              <div class="info-box">
+                <i class="fas fa-user-md"></i>
+                <h3>Ayush Barai</h3>
+                <p>USN - 1OX20CS025</p>
+                <p href="https://github.com/AyushBarai">Github - https://github.com/AyushBarai</p>
+                <p>baraiayush541@Gmail.com</p>
+              </div>
+            </div>
+        </div>
+
+          <div class="col-lg-4">
+            <div class="col-md-12">
+              <div class="info-box">
+                <i class="fas fa-user-md"></i>
+                <h3>Ayush Barai</h3>
+                <p>USN - 1OX20CS025</p>
+                <p href="https://github.com/AyushBarai">Github - https://github.com/AyushBarai</p>
+                <p>baraiayush541@Gmail.com</p>
+              </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+          <div class="col-md-12">
+            <div class="info-box">
+              <i class="fas fa-user-md"></i>
+              <h3>Ayush Barai</h3>
+              <p>USN - 1OX20CS025</p>
+              <p href="https://github.com/AyushBarai">Github - https://github.com/AyushBarai</p>
+              <p>baraiayush541@Gmail.com</p>
+            </div>
+          </div>
+      </div>
+            
+
+        </div>
+      </div>
+    </section><!-- End Contact Section -->
+
+  </main><!-- End #main -->
+
+  <div id="preloader"></div>
+  <a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i
+      class="bi bi-arrow-up-short"></i></a>
+
+  <!-- Vendor JS Files -->
+  <script src="../static/assets/vendor/purecounter/purecounter_vanilla.js"></script>
+  <script src="../static/assets/vendor/aos/aos.js"></script>
+  <script src="../static/assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+  <script src="../static/assets/vendor/glightbox/js/glightbox.min.js"></script>
+  <script src="../static/assets/vendor/swiper/swiper-bundle.min.js"></script>
+  <script src="../static/assets/vendor/php-email-form/validate.js"></script>
+
+  <!-- Template Main JS File -->
+  <script src="../static/assets/js/main.js"></script>
+
+</body>
+
+</html>

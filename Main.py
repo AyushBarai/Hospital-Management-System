@@ -58,6 +58,7 @@ class doctor(db.Model, UserMixin):
     Email=db.Column(db.String(50))
     Name=db.Column(db.String(50))
     dept=db.Column(db.String(50))
+    phone=db.Column(db.String(10),unique=True)
 
 
 class signin(db.Model, UserMixin):
@@ -139,6 +140,43 @@ def docedit():
     query=db.engine.execute(f"SELECT * FROM `patients` WHERE dept='{exist}'")
     return render_template("docedit.html", query=query) 
 
+@app.route("/admin")
+def admin():
+    return render_template("admin.html")
+
+@app.route("/adminapp")
+def adminapp(): 
+    query=db.engine.execute(f"SELECT * FROM `patients`")
+    return render_template("adminapp.html", query=query) 
+
+@app.route("/adddoc", methods=['POST','GET'])
+def adddoc(): 
+    query=db.engine.execute(f"SELECT * FROM `doctor`")
+    if request.method=="POST":
+        Name=request.form.get('name')
+        Email=request.form.get('email')
+        Contact=request.form.get('phone')
+        password=request.form.get('password')
+        dept=request.form.get('dept')
+
+        encpassword=generate_password_hash(password)
+        encconfirm=generate_password_hash(password)
+
+        emailuser=signin.query.filter_by(Email=Email).first()
+        contact=signin.query.filter_by(Contact=Contact).first()
+        if (emailuser) or (contact):
+            flash(' Email or Contact is already taken ' , 'warning')
+            return render_template("signup.html")
+
+        #Inserting Data into DataBase  
+        new_user=db.engine.execute(f"INSERT INTO `signin`(`Name`,`Email`,`Contact`,`password`,`confirm`,`type`,`dept`) VALUES('{Name}','{Email}','{Contact}','{encpassword}','{encconfirm}','doctor','{dept}')")
+
+        #Entering into Doctor Table if type = doctor
+        doc_user=db.engine.execute(f"INSERT INTO `doctor`(`Email`,`Name`,`dept`,`phone`) VALUES('{Email}','{Name}','{dept}','{Contact}')")
+        return render_template("adddoc.html", query=query)
+        
+    return render_template("adddoc.html", query=query) 
+
 @app.route("/medicine/<string:name>", methods=['POST','GET'])
 @login_required
 def medicine(name):
@@ -198,11 +236,12 @@ def login():
                 return render_template("login.html")
         
         else:
-            print(user,user.password,password)
-            if user and check_password_hash(user.password,password):
+            print(user.Email,user.password,password)
+            if user and check_password_hash(user.password,password) and user.type==type:
                 login_user(user)
                 print("None")
-                return render_template("index.html")
+                
+                return render_template("admin.html")
             else:
                 flash('invalid credentials' , 'danger')
                 return render_template("login.html")
@@ -233,10 +272,6 @@ def signup():
 
         #Inserting Data into DataBase  
         new_user=db.engine.execute(f"INSERT INTO `signin`(`Name`,`Email`,`Contact`,`password`,`confirm`,`type`,`dept`) VALUES('{Name}','{Email}','{Contact}','{encpassword}','{encconfirm}','{type}','{dept}')")
-
-        #Entering into Doctor Table if type = doctor
-        if type == "doctor":
-            doc_user=db.engine.execute(f"INSERT INTO `doctor`(`Email`,`Name`,`dept`) VALUES('{Email}','{Name}','{dept}')")
 
         flash("SignUp Success Please Login", "Success")
         return render_template("login.html")
@@ -289,4 +324,3 @@ def check(pid):
 
 
 app.run(debug=True)
-
