@@ -60,7 +60,7 @@
 
       <nav id="navbar" class="navbar order-last order-lg-0">
         <ul>
-          <li><a class="nav-link scrollto " href="/">Home</a></li>
+          <li><a class="nav-link scrollto " href="/admin">Home</a></li>
           <li><a class="nav-link scrollto" href={% if current_user.is_authenticated%}
                                                     "/adminapp" 
                                                   {% else %}
@@ -84,9 +84,10 @@
                             </li>
                 {% endif %} 
         </ul>
+        <li><a class="nav-link scrollto " href="/admin">ADMIN</a></li>
         <i class="bi bi-list mobile-nav-toggle"></i>
       </nav><!-- .navbar -->
-\    </div>
+    </div>
   </header><!-- End Header -->
 
   <!-- ======= Hero Section ======= -->

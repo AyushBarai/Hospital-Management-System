@@ -60,7 +60,7 @@
 
       <nav id="navbar" class="navbar order-last order-lg-0">
         <ul>
-          <li><a class="nav-link scrollto " href="admin">Home</a></li>
+          <li><a class="nav-link scrollto " href="/admin">Home</a></li>
           <li><a class="nav-link scrollto" href={% if current_user.is_authenticated%}
                                                     "/adminapp" 
                                                   {% else %}
@@ -84,6 +84,9 @@
                             </li>
                 {% endif %} 
         </ul>
+        <li><a class="nav-link scrollto " href="/admin">ADMIN</a></li>
+        <li><a class="nav-link scrollto " href="/admin">ADMIN</a></li>
+
         <i class="bi bi-list mobile-nav-toggle"></i>
       </nav><!-- .navbar -->
     </div>
@@ -91,6 +94,7 @@
 
   <!-- Detail Section-->
   <section id="table" style = "padding-left: 150px; padding-right: 150px;">
+    <h2></h2>
     <section id="appointment" class="appointment section-bg">
         <div class="container" data-aos="fade-up">
   
@@ -148,11 +152,13 @@
             <section id="table" style = "padding-left: 150px;" >
                 <div>
                     <div>
+                      <h2>Present Doctor -</h2>
                             <table class="table table-striped table-hover">
                             <thead class="thead-light">
                                 <tr>
                                 <th scope="col">Name</th>    
                                 <th scope="col">Email</th>
+                                <th scope="col">Dept</th>
                                 <th scope="col">Contact</th>
                                 <th scope="col">Delete</th>
                                 </tr>
@@ -162,8 +168,9 @@
                                 <tr>
                                 <td>{{post.Name}}</td>
                                 <td>{{post.Email}}</td>
+                                <td>{{post.dept}}</td>
                                 <td>{{post.phone}}</td>
-                                <td><a href="/dele/{{post.mid}}/name/{{post.name}}"><button onclick="return confirm('Are you sure to Delete data');" class="btn btn-success">Delete </button> </a> </td>
+                                <td><a href="/deldoc/{{post.did}}"><button onclick="return confirm('Are you sure to Delete data');" class="btn btn-success">Delete </button> </a> </td>
                                 </tr>
                             {% endfor %}
                             
@@ -177,6 +184,63 @@
 </section>
 
 
+    <!-- ======= Departments Section ======= -->
+    <section id="departments" class="departments">
+      <div class="container" data-aos="fade-up">
+
+        <div class="section-title">
+          <h2>Departments</h2>
+          <p>Magnam dolores commodi suscipit. Necessitatibus eius consequatur ex aliquid fuga eum quidem. Sit sint
+            consectetur velit. Quisquam quos quisquam cupiditate. Et nemo qui impedit suscipit alias ea. Quia fugiat sit
+            in iste officiis commodi quidem hic quas.</p>
+        </div>
+
+        <div class="row" data-aos="fade-up" data-aos-delay="100">
+          <div class="col-lg-4 mb-5 mb-lg-0">
+            <ul class="nav nav-tabs flex-column">
+              <li class="nav-item">
+                <a class="nav-link active show" data-bs-toggle="tab" data-bs-target="#tab-1">
+                  <h4>OPD</h4>
+                  <p>Quis excepturi porro totam sint earum quo nulla perspiciatis eius.</p>
+                </a>
+              </li>
+              <li class="nav-item mt-2">
+                <a class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-2">
+                  <h4>IPD</h4>
+                  <p>Voluptas vel esse repudiandae quo excepturi.</p>
+                </a>
+              </li>
+              <li class="nav-item mt-2">
+                <a class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-3">
+                  <h4>Oncology</h4>
+                  <p>Velit veniam ipsa sit nihil blanditiis mollitia natus.</p>
+                </a>
+              </li>
+              <li class="nav-item mt-2">
+                <a class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-4">
+                  <h4>Pediatrics</h4>
+                  <p>Ratione hic sapiente nostrum doloremque illum nulla praesentium id</p>
+                </a>
+              </li>
+              <li class="nav-item mt-2">
+                <a class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-2">
+                  <h4>Neurology</h4>
+                  <p>Voluptas vel esse repudiandae quo excepturi.</p>
+                </a>
+              </li>
+              <li class="nav-item mt-2">
+                <a class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-2">
+                  <h4>Orthopaedic</h4>
+                  <p>Voluptas vel esse repudiandae quo excepturi.</p>
+                </a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      </div>
+    </section><!-- End Departments Section -->
 
     <!-- ======= Contact Section ======= -->
     <section id="contact" class="contact">

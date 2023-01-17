@@ -166,15 +166,19 @@ def adddoc():
         contact=signin.query.filter_by(Contact=Contact).first()
         if (emailuser) or (contact):
             flash(' Email or Contact is already taken ' , 'warning')
-            return render_template("signup.html")
+            return render_template("adddoc.html", query=query)
 
         #Inserting Data into DataBase  
-        new_user=db.engine.execute(f"INSERT INTO `signin`(`Name`,`Email`,`Contact`,`password`,`confirm`,`type`,`dept`) VALUES('{Name}','{Email}','{Contact}','{encpassword}','{encconfirm}','doctor','{dept}')")
-
-        #Entering into Doctor Table if type = doctor
         doc_user=db.engine.execute(f"INSERT INTO `doctor`(`Email`,`Name`,`dept`,`phone`) VALUES('{Email}','{Name}','{dept}','{Contact}')")
+        query=db.engine.execute(f"SELECT * FROM `doctor`")
         return render_template("adddoc.html", query=query)
         
+    return render_template("adddoc.html", query=query) 
+
+@app.route("/deldoc/<string:did>", methods=['POST','GET'])
+def deldoc(did):
+    db.engine.execute(f"DELETE FROM `doctor` WHERE `doctor`.`did`={did} ")
+    query=db.engine.execute(f"SELECT * FROM `doctor`")
     return render_template("adddoc.html", query=query) 
 
 @app.route("/medicine/<string:name>", methods=['POST','GET'])
@@ -214,9 +218,8 @@ def login():
         Email=request.form.get('Email')
         password=request.form.get('password')
         type=request.form.get('type')
-        user=signin.query.filter_by(Email=Email).first()
-        print(user)
         if type=="doctor":
+            user=doctor.query.filter_by(Email=Email).first()
             if user and check_password_hash(user.password,password) and user.type==type:
                 login_user(user)
                 exist=current_user.dept
@@ -227,6 +230,7 @@ def login():
                 return render_template("login.html")
 
         elif type=="patient":
+            user=signin.query.filter_by(Email=Email).first()
             if user and check_password_hash(user.password,password) and user.type==type:
                 login_user(user)
                 print("patient")
@@ -236,6 +240,7 @@ def login():
                 return render_template("login.html")
         
         else:
+            user=signin.query.filter_by(Email=Email).first()
             print(user.Email,user.password,password)
             if user and check_password_hash(user.password,password) and user.type==type:
                 login_user(user)
