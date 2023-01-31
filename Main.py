@@ -43,22 +43,22 @@ class Test(db.Model):
     id=db.Column(db.Integer,primary_key=True)
     name=db.column(db.String(50))
 
-
 class modicine(db.Model, UserMixin):
     mid=db.Column(db.Integer,primary_key=True)
     name=db.Column(db.String(100))
     med=db.Column(db.String(100))
     quanity=db.Column(db.Integer)
     date=db.Column(db.DateTime, nullable = False)
-
+    dept=db.Column(db.String(50))
 
 
 class doctor(db.Model, UserMixin):
-    did=db.Column(db.Integer,primary_key=True)
+    id=db.Column(db.Integer,primary_key=True)
     Email=db.Column(db.String(50))
     Name=db.Column(db.String(50))
     dept=db.Column(db.String(50))
     phone=db.Column(db.String(10),unique=True)
+    password=db.Column(db.String(100000),unique=True)
 
 
 class signin(db.Model, UserMixin):
@@ -86,12 +86,15 @@ class patients(db.Model, UserMixin):
 
 @app.route("/")
 def index():
-    if current_user==True:
-        if current_user.type == "doctor":
-            exist=current_user.dept
-            query=db.engine.execute(f"SELECT * FROM `patients` WHERE dept='{exist}'")
-            return render_template("docbase.html", query=query)
-    return render_template("index.html")
+    if current_user.is_authenticated: 
+        if current_user.type == "admin":
+                return redirect("/admin")
+        elif current_user.type == "patient":
+                return render_template("index.html")
+        elif current_user.type == "doctor":
+                return redirect('/doc')
+    else:
+        return render_template("index.html")
 
 @app.route("/appointment", methods=['POST','GET'])
 @login_required
@@ -124,7 +127,7 @@ def edit():
 
 @app.route("/appdetail")
 def appdetail(): 
-    exist=current_user.id 
+    exist=current_user.id
     query=db.engine.execute(f"SELECT * FROM `patients` WHERE same='{exist}'")
     return render_template("appdetail.html", query=query)
 
@@ -144,6 +147,10 @@ def docedit():
 def admin():
     return render_template("admin.html")
 
+@app.route("/doc")
+def doc():
+    return render_template("doc.html")
+
 @app.route("/adminapp")
 def adminapp(): 
     query=db.engine.execute(f"SELECT * FROM `patients`")
@@ -160,7 +167,6 @@ def adddoc():
         dept=request.form.get('dept')
 
         encpassword=generate_password_hash(password)
-        encconfirm=generate_password_hash(password)
 
         emailuser=signin.query.filter_by(Email=Email).first()
         contact=signin.query.filter_by(Contact=Contact).first()
@@ -169,30 +175,36 @@ def adddoc():
             return render_template("adddoc.html", query=query)
 
         #Inserting Data into DataBase  
-        doc_user=db.engine.execute(f"INSERT INTO `doctor`(`Email`,`Name`,`dept`,`phone`) VALUES('{Email}','{Name}','{dept}','{Contact}')")
+        new_user=db.engine.execute(f"INSERT INTO `signin`(`Name`,`Email`,`Contact`,`password`,`confirm`,`type`,`dept`) VALUES('{Name}','{Email}','{Contact}','{encpassword}','{encpassword}','doctor','{dept}')")
+        doc_user=db.engine.execute(f"INSERT INTO `doctor`(`Email`,`Name`,`dept`,`phone`,`password`) VALUES('{Email}','{Name}','{dept}','{Contact}','{encpassword}')")
         query=db.engine.execute(f"SELECT * FROM `doctor`")
         return render_template("adddoc.html", query=query)
         
     return render_template("adddoc.html", query=query) 
 
-@app.route("/deldoc/<string:did>", methods=['POST','GET'])
-def deldoc(did):
-    db.engine.execute(f"DELETE FROM `doctor` WHERE `doctor`.`did`={did} ")
-    query=db.engine.execute(f"SELECT * FROM `doctor`")
-    return render_template("adddoc.html", query=query) 
+@app.route("/deleadmin/<string:pid>")
+def deleadmin(pid):
+    db.engine.execute(f"DELETE FROM `patients` WHERE `patients`.`pid`={pid} ")
+    return redirect('/adminapp')
 
-@app.route("/medicine/<string:name>", methods=['POST','GET'])
+@app.route("/deldoc/<string:id>/<string:Email>", methods=['POST','GET'])
+def deldoc(id,Email):
+    db.engine.execute(f"DELETE FROM `doctor` WHERE `doctor`.`id`={id} ")
+    signuser=signin.query.filter_by(Email=Email).first()
+    db.engine.execute(f"DELETE FROM `signin` WHERE `signin`.`id`={signuser.id} ")
+    return redirect("/adddoc") 
+
+@app.route("/addmed/<string:name>", methods=['POST','GET'])
 @login_required
 def medicine(name):
     if request.method=="POST":
         med=request.form.get('med')
         quantity=request.form.get('quantity')
         date = datetime.now()
-        new_user=db.engine.execute(f"INSERT INTO `medicine`(`med`,`quantity`,`name`,`date`) VALUES('{med}','{quantity}','{name}','{date}')")
-
+        dept = current_user.dept
+        new_user=db.engine.execute(f"INSERT INTO `medicine`(`med`,`quantity`,`name`,`date`,`dept`) VALUES('{med}','{quantity}','{name}','{date}','{dept}')")
     query=db.engine.execute(f"SELECT * FROM `medicine` WHERE name='{name}'")
-    print(name)
-    return render_template("medicine.html", namee=name, query=query)
+    return render_template("addmed.html", name=name, query=query)
 
 
 @app.route("/dele/<string:mid>/name/<string:name>",methods=['POST','GET'])
@@ -204,6 +216,16 @@ def dele(mid,name):
     return redirect(url_for('medicine', name = name))
 #redirect('/medicine/`name`')
 
+@app.route("/docmed")
+def docmed():
+    dept=current_user.dept
+    query=db.engine.execute(f"SELECT * FROM `medicine` WHERE dept='{dept}'")
+    return render_template("medicine.html", query=query)
+
+@app.route("/allmed")
+def allmed():
+    query=db.engine.execute(f"SELECT * FROM `medicine`")
+    return render_template("allmed.html", query=query)
 
 @app.route("/med")
 def med():
@@ -211,7 +233,6 @@ def med():
     query=db.engine.execute(f"SELECT * FROM `medicine` WHERE name='{name}'")
     return render_template("patmed.html", query=query)
 
- 
 @app.route("/login", methods=['POST','GET'])
 def login():
     if request.method=="POST":
@@ -219,12 +240,10 @@ def login():
         password=request.form.get('password')
         type=request.form.get('type')
         if type=="doctor":
-            user=doctor.query.filter_by(Email=Email).first()
+            user=signin.query.filter_by(Email=Email).first()
             if user and check_password_hash(user.password,password) and user.type==type:
                 login_user(user)
-                exist=current_user.dept
-                query=db.engine.execute(f"SELECT * FROM `patients` WHERE dept='{exist}'")
-                return render_template("docbase.html", query=query)
+                return redirect('/')
             else:
                 flash('invalid credentials' , 'danger')
                 return render_template("login.html")
@@ -233,20 +252,18 @@ def login():
             user=signin.query.filter_by(Email=Email).first()
             if user and check_password_hash(user.password,password) and user.type==type:
                 login_user(user)
-                print("patient")
-                return render_template("index.html")
+                return redirect('/')
+
             else:
                 flash('invalid credentials' , 'danger')
                 return render_template("login.html")
         
         else:
             user=signin.query.filter_by(Email=Email).first()
-            print(user.Email,user.password,password)
             if user and check_password_hash(user.password,password) and user.type==type:
-                login_user(user)
-                print("None")
-                
-                return render_template("admin.html")
+                login_user(user)                
+                return redirect('/')
+
             else:
                 flash('invalid credentials' , 'danger')
                 return render_template("login.html")
@@ -273,7 +290,7 @@ def signup():
         contact=signin.query.filter_by(Contact=Contact).first()
         if (emailuser) or (contact):
             flash(' Email or Contact is already taken ' , 'warning')
-            return render_template("signup.html")
+            return render_template("tempsignup.html")
 
         #Inserting Data into DataBase  
         new_user=db.engine.execute(f"INSERT INTO `signin`(`Name`,`Email`,`Contact`,`password`,`confirm`,`type`,`dept`) VALUES('{Name}','{Email}','{Contact}','{encpassword}','{encconfirm}','{type}','{dept}')")
@@ -300,30 +317,11 @@ def patlogin():
 
 
 @app.route("/delete/<string:pid>",methods=['POST','GET'])
-@login_required
 def delete(pid):
     db.engine.execute(f"DELETE FROM `patients` WHERE `patients`.`pid`={pid}")
     flash("Slot Deleted Successful","danger")
-    return redirect('/docedit')
+    return redirect('/appdetail')
 
-@app.route("/check/<string:pid>",methods=['POST','GET'])
-@login_required
-def check(pid):
-    post=patients.query.filter_by(pid=pid).first()
-    if request.method=="POST":
-        Email=current_user.Email
-        Name=request.form.get('Name')
-        gender=request.form.get('gender')
-        disease=request.form.get('disease')
-        time=request.form.get('time')
-        date=request.form.get('date')
-        dept=request.form.get('dept')
-        phone=request.form.get('phone')
-        db.engine.execute(f"UPDATE `patients` SET `Email` = '{Email}', `Name` = '{Name}', `gender` = '{gender}', `disease` = '{disease}', `time` = '{time}', `date` = '{date}', `dept` = '{dept}', `phone` = '{phone}' WHERE `patients`.`pid` = {pid}")
-        flash("Slot is Updates","success")
-        return render_template("editdetail.html",post=post)
-
-    return render_template("editdetail.html",post=post)
 
 
 
