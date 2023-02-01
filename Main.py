@@ -83,6 +83,17 @@ class patients(db.Model, UserMixin):
     dept=db.Column(db.String(50),nullable=False)
     phone=db.Column(db.String(12))
 
+@app.route("/test")
+def test():
+    try:
+        check=Test.query.all()
+        print(check)
+        return f'MY DATABASE IS CONNECTED'
+    except Exception as e:
+        print(e)
+        return f'MY DATABASE IS NOT CONNECTED :- Error - {e}'
+
+
 
 @app.route("/")
 def index():
